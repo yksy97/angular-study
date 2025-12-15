@@ -1,18 +1,29 @@
-form {
-  max-width: 320px;
-  margin: 40px auto;
+/* ログイン画面：レイアウト */
+.login-form {
+  max-width: 300px; /* 入力フォーム横幅 */
+  margin: 100px auto; /* 上下余白 / 左右中央寄せ */
 }
 
-div {
-  margin-bottom: 16px;
+/* ログイン画面：見出し */
+.login-title {
+  text-align: center; /* 見出し中央寄せ */
+  margin-bottom: 24px; /* 見出しと入力フォームの間隔 */
+}
+
+/* ログイン画面：入力フォーム要素 */
+.login-form-row {
+  margin-bottom: 16px; /* 入力フォームの行間隔 */
 }
 
 input {
   width: 100%;
   padding: 8px;
+  box-sizing: border-box; /* padding込みで横幅100% */
 }
 
+/* ログイン画面：ボタン */
 button {
   width: 100%;
   padding: 8px;
+  cursor: pointer; /* ホバーエフェクト変更 */
 }

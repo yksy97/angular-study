@@ -1,19 +1,66 @@
-<h2>ログイン</h2>
+<!-- ログイン画面：入力フォーム -->
+<form class="login-form">
+  <!-- ログイン画面：見出し -->
+  <h2 class="login-title">ログイン</h2>
 
-<form>
-  <div>
+  <!-- ログイン画面：ユーザID入力フォーム -->
+  <!--
+        ngModel（双方向バインディングの代表例）：
+        ・入力フォームの値と TypeScript のプロパティを常に同期（binding）する仕組み
+        ＊実務では Reactive Forms など、別の方法でフォーム状態を管理することも多い
+
+        ＊ngModel は属性ディレクティブの1つ
+        ・HTML要素（input）の振る舞いを拡張する
+        ・入力値と Component の状態を同期する
+        ・フォーム状態（入力済み・未入力など）を管理する
+
+        ＊[(ngModel)] は [property] + (event) を束ねた省略記法
+        ・[property]：input の value へのバインディング（例：[value]="userId"）
+        ・(event)   ：(input)（例：userId = $event.target.value）
+        　 ＊（input）：文字を打つたびに発生するイベント
+
+        *暗黙的イベント：ngModel が内部で使う (input)（Angular が自動で登録・処理）イベント
+        *明示的イベント：(click)="onLogin()" のように開発者が記載するイベント
+
+        Java（Spring）のように
+        「送信して → 1度だけ受け取る」というモデルではなく、
+        画面の"状態"を常に Component のオブジェクトとして保持する点が大きな違い。
+
+        仕組み（公式ガイド要約）：
+        1. @angular/forms から FormsModule を import
+        2. ngModel 属性ディレクティブを使用
+        3. Component のプロパティ（例：userId）と同期（binding）
+
+        設計思想のポイント：
+        Angular は「画面の状態を、常にオブジェクトとして保持する」設計を採用している。
+        双方向バインディングは、その思想を体現する代表的な仕組みの1つ。
+
+        Javaとの比較：
+        【Java（Spring MVC）】
+        ・HTTPリクエスト → パラメータを1度だけ受け取る → メソッド引数にマッピング
+        ・フォーム送信が必要（一方向）
+
+        【Angular】
+        ・入力値が HTML と Component の間で常に同期（binding）
+        ・ログインボタンは「送信」ではなく「状態を使うトリガー」
+        ・フォーム送信は必須ではない
+    -->
+
+  <div class="login-form-row">
     <label>
-      User ID
-      <input type="text" />
+      ユーザ ID
+      <input type="text" [(ngModel)]="userId" name="userId" />
     </label>
   </div>
 
-  <div>
+  <!-- ログイン画面：パスワード入力フォーム -->
+  <div class="login-form-row">
     <label>
-      Password
-      <input type="password" />
+      パスワード
+      <input type="password" [(ngModel)]="password" name="password" />
     </label>
   </div>
 
-  <button type="button">ログイン</button>
+  <!-- ログイン画面：ログインボタン -->
+  <button type="button" (click)="onLogin()">ログイン</button>
 </form>

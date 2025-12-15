@@ -1,0 +1,7 @@
+/* app共通のCSS */
+
+/* app名称（見出し） */
+.angular-study {
+  text-align: center; /* 見出し中央寄せ */
+  margin-bottom: 24px; /* ヘッダーと画面内容の間隔 */
+}
