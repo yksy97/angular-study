@@ -1,11 +1,9 @@
 <!-- ログイン画面：入力フォーム -->
-<form class="login-form">
+<form class="login-form" #f="ngForm" (ngSubmit)="onLogin()" novalidate>
   <!-- ログイン画面：見出し -->
   <h2 class="login-title">ログイン</h2>
 
-  <!-- ログイン画面：ユーザID入力フォーム -->
-  <!--
-        ngModel（双方向バインディングの代表例）：
+  <!-- ngModel（双方向バインディングの代表例）：
         ・入力フォームの値と TypeScript のプロパティを常に同期（binding）する仕組み
         ＊実務では Reactive Forms など、別の方法でフォーム状態を管理することも多い
 
@@ -46,21 +44,77 @@
         ・フォーム送信は必須ではない
     -->
 
-  <div class="login-form-row">
-    <label>
-      ユーザ ID
-      <input type="text" [(ngModel)]="userId" name="userId" />
-    </label>
+  <!-- =========================
+     ログイン前（フォームを表示）
+     loggedIn が false の間だけ表示する
+     ========================= -->
+  <div *ngIf="!loggedIn">
+    <!-- ログイン画面：入力フォーム -->
+    <!-- ※フォーム全体をログイン前ブロックに入れる -->
+    <form class="login-form" #f="ngForm" (ngSubmit)="onLogin()" novalidate>
+      <!-- ログイン画面：ユーザID入力フォーム -->
+      <div class="login-form-row">
+        <label>
+          ユーザ ID
+          <input type="text" [(ngModel)]="userId" name="userId" required #userIdCtrl="ngModel" />
+        </label>
+
+        <!-- 未入力の場合 -->
+        <!-- touched（フォームに触れる）または submitted（ログイン押下済）ならエラー表示 -->
+        <div class="error" *ngIf="userIdCtrl.invalid && (userIdCtrl.touched || f.submitted)">
+          ユーザIDの入力は必須です
+        </div>
+      </div>
+
+      <!-- ログイン画面：パスワード入力フォーム -->
+      <div class="login-form-row">
+        <label>
+          パスワード
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            minlength="4"
+            #pwCtrl="ngModel"
+          />
+        </label>
+        <!-- 未入力の場合 -->
+        <div class="error" *ngIf="pwCtrl.errors?.['required'] && (pwCtrl.touched || f.submitted)">
+          パスワードの入力は必須です
+        </div>
+        <!-- パスワードが4文字未満の場合 -->
+        <div class="error" *ngIf="pwCtrl.errors?.['minlength'] && (pwCtrl.touched || f.submitted)">
+          パスワードは4文字以上入力してください
+        </div>
+      </div>
+
+      <!-- ログイン画面：ログインボタン -->
+      <!-- clickをやめてsubmitに変更 -->
+      <!-- <button type="button" (click)="onLogin()">ログイン</button> -->
+      <button type="submit" [disabled]="f.invalid || submitting">
+        {{ submitting ? 'ログイン中…' : 'ログイン' }}
+      </button>
+
+      <div class="error" *ngIf="loginError">{{ loginError }}</div>
+
+      <!-- ★「ログイン成功」はログイン前フォーム内では出さない（ログイン後ブロックに移す） -->
+      <!-- <div class="success" *ngIf="loggedIn">ログイン成功</div> -->
+    </form>
   </div>
 
-  <!-- ログイン画面：パスワード入力フォーム -->
-  <div class="login-form-row">
-    <label>
-      パスワード
-      <input type="password" [(ngModel)]="password" name="password" />
-    </label>
-  </div>
+  <!-- =========================
+     ログイン後（フォームを隠して表示）
+     loggedIn が true の間だけ表示する
+     ========================= -->
+  <div *ngIf="loggedIn" class="after-login">
+    <!-- ログイン成功後の表示（状態で画面を切り替えるのが第6章っぽいところ） -->
+    <div class="success">ログイン成功</div>
 
-  <!-- ログイン画面：ログインボタン -->
-  <button type="button" (click)="onLogin()">ログイン</button>
+    <!-- userId は入力値として保持されているので、そのまま表示できる -->
+    <p>ようこそ、{{ userId }} さん</p>
+
+    <!-- ログアウトで loggedIn=false に戻してフォーム表示へ -->
+    <button type="button" (click)="logout()">ログアウト</button>
+  </div>
 </form>
