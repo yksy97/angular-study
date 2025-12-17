@@ -56,6 +56,30 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   /**
+   * 認証状態（Service側で保持する状態）
+   *
+   * なぜ Service に持たせるのか：
+   * 以前は LoginComponent が
+   * 「Service から返ってきた結果」を元に
+   * loggedIn / role を判断していた。
+   *
+   * しかしその構造では、
+   * ・LoginComponent の外（Home / Admin / Guard）から
+   *   「いまログイン中か？」を判断できない
+   * ・画面をまたいで認証状態を共有できない
+   *
+   * そのため、
+   * 認証の成否・ユーザ種別という
+   * 「アプリ全体で一意であるべき事実（真実の情報源）」を
+   * Service に集約する。
+   *
+   * → Component は UI状態のみを持ち、
+   * → 認証状態は Service が保証する、という責務分離。
+   */
+  private loggedIn = false;
+  private currentRole: Role | null = null;
+
+  /**
    * ログイン処理
    * @param userId 入力されたユーザID
    * @param password 入力されたパスワード
@@ -82,7 +106,8 @@ export class AuthService {
      * → Service 内で RxJS の詳細を隠蔽し、
      *    Component 側では async / await だけで扱えるようにする
      */
-    const data = await firstValueFrom(this.http.get<UsersJson>('assets/users.json'));
+    // 注意：users.json は public/ に置いているため、取得パスは /users.json（assets/ ではない）
+    const data = await firstValueFrom(this.http.get<UsersJson>('/users.json'));
 
     /**
      * 入力された userId / password と一致するユーザを検索
@@ -97,14 +122,61 @@ export class AuthService {
      */
     const user = data.users.find((u) => u.id === userId && u.password === password);
 
-    /**
-     * 認証結果の返却
-     * ・ユーザが見つかった場合：role（user/admin） を返す
-     * ・見つからなかった場合：null を返す
-     *
-     * → UI 側は戻り値が null かどうかで
-     *    「ログイン成功 / 失敗」を判断する
-     */
-    return user ? user.role : null;
+    if (user) {
+      /*  【認証成功時の状態確定】
+    ここで role を返すだけでなく、
+    Service 自身の状態（loggedIn / currentRole）を確定させる。
+
+    理由：
+    ・Component 単体で判断すると、
+    アプリ全体で認証状態を共有できないため
+    ・Guard / Router / 他Component から
+    同じ「真実の状態」を参照できるようにする
+      ============================================ */
+      this.loggedIn = true;
+      this.currentRole = user.role;
+      return user.role;
+    }
+
+    /*  【認証失敗時】
+     状態は未ログインのままにする
+    ============================================ */
+    this.loggedIn = false;
+    this.currentRole = null;
+    return null;
+  }
+
+  /**
+   * ログイン済みかどうかを返す
+   *
+   * 用途：
+   * ・Route Guard でのアクセス制御
+   * ・画面初期化時の状態判定
+   */
+  isLoggedIn(): boolean {
+    return this.loggedIn;
+  }
+
+  /**
+   * 現在ログインしているユーザの role を返す
+   *
+   * 用途：
+   * ・admin 専用画面へのアクセス制御
+   * ・UI分岐（必要最小限）
+   */
+  getRole(): Role | null {
+    return this.currentRole;
+  }
+
+  /**
+   * ログアウト処理
+   *
+   * 役割：
+   * ・認証状態を完全に初期化する
+   * ・トークン認証に移行した場合も、この責務は Service に残る
+   */
+  logout(): void {
+    this.loggedIn = false;
+    this.currentRole = null;
   }
 }

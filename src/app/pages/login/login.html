@@ -1,106 +1,151 @@
 <!-- ログイン画面：入力フォーム -->
 <form class="login-form" #f="ngForm" (ngSubmit)="onLogin()" novalidate>
-  <!-- ログイン画面：見出し -->
   <h2 class="login-title">ログイン</h2>
-
-  <!-- ngModel（双方向バインディングの代表例）：
-        ・入力フォームの値と TypeScript のプロパティを常に同期（binding）する仕組み
-        ＊実務では Reactive Forms など、別の方法でフォーム状態を管理することも多い
-
-        ＊ngModel は属性ディレクティブの1つ
-        ・HTML要素（input）の振る舞いを拡張する
-        ・入力値と Component の状態を同期する
-        ・フォーム状態（入力済み・未入力など）を管理する
-
-        ＊[(ngModel)] は [property] + (event) を束ねた省略記法
-        ・[property]：input の value へのバインディング（例：[value]="userId"）
-        ・(event)   ：(input)（例：userId = $event.target.value）
-        　 ＊（input）：文字を打つたびに発生するイベント
-
-        *暗黙的イベント：ngModel が内部で使う (input)（Angular が自動で登録・処理）イベント
-        *明示的イベント：(click)="onLogin()" のように開発者が記載するイベント
-
-        Java（Spring）のように
-        「送信して → 1度だけ受け取る」というモデルではなく、
-        画面の"状態"を常に Component のオブジェクトとして保持する点が大きな違い。
-
-        仕組み（公式ガイド要約）：
-        1. @angular/forms から FormsModule を import
-        2. ngModel 属性ディレクティブを使用
-        3. Component のプロパティ（例：userId）と同期（binding）
-
-        設計思想のポイント：
-        Angular は「画面の状態を、常にオブジェクトとして保持する」設計を採用している。
-        双方向バインディングは、その思想を体現する代表的な仕組みの1つ。
-
-        Javaとの比較：
-        【Java（Spring MVC）】
-        ・HTTPリクエスト → パラメータを1度だけ受け取る → メソッド引数にマッピング
-        ・フォーム送信が必要（一方向）
-
-        【Angular】
-        ・入力値が HTML と Component の間で常に同期（binding）
-        ・ログインボタンは「送信」ではなく「状態を使うトリガー」
-        ・フォーム送信は必須ではない
-    -->
 
   <!-- =========================
      ログイン前（フォームを表示）
      loggedIn が false の間だけ表示する
      ========================= -->
   <div *ngIf="!loggedIn">
-    <!-- ログイン画面：入力フォーム -->
-    <!-- ※フォーム全体をログイン前ブロックに入れる -->
-    <form class="login-form" #f="ngForm" (ngSubmit)="onLogin()" novalidate>
-      <!-- ログイン画面：ユーザID入力フォーム -->
-      <div class="login-form-row">
-        <label>
-          ユーザ ID
-          <input type="text" [(ngModel)]="userId" name="userId" required #userIdCtrl="ngModel" />
-        </label>
+    <div class="login-form-row">
+      <label>
+        ユーザ ID
+        <input type="text" [(ngModel)]="userId" name="userId" required #userIdCtrl="ngModel" />
+      </label>
 
-        <!-- 未入力の場合 -->
-        <!-- touched（フォームに触れる）または submitted（ログイン押下済）ならエラー表示 -->
-        <div class="error" *ngIf="userIdCtrl.invalid && (userIdCtrl.touched || f.submitted)">
-          ユーザIDの入力は必須です
-        </div>
+      <!-- 【ngModel が持つ「状態プロパティ」一覧】
+
+       ngModel（ここでは userIdCtrl）は、
+       単なる「値」ではなく、入力フィールドの状態を保持するオブジェクト。
+
+       主なプロパティ：
+
+       ■ userIdCtrl.value
+         - 現在の入力値（ここでは userId と同期）
+
+       ■ userIdCtrl.valid / invalid
+         - valid   : すべてのバリデーションを満たしている
+         - invalid : 1つでも満たしていない
+
+       ■ userIdCtrl.errors
+         - どのバリデーションに失敗しているかの詳細
+         - 例：
+           {
+             required: true
+           }
+
+       ■ userIdCtrl.touched
+         - ユーザが「一度でも」この入力欄にフォーカスして離れたか
+         - true になるタイミング：
+             クリック / Tab 移動 → フォーカスアウト（blur）
+         - 文字を入力したかどうかは関係ない
+
+       ■ userIdCtrl.untouched
+         - まだ一度も触れていない状態（touched の逆）
+
+       ■ userIdCtrl.dirty
+         - 初期値から「値が変更された」かどうか
+         - true になるタイミング：
+             実際に文字を変更したとき（値が変化した時点）
+
+       ■ userIdCtrl.pristine
+         - dirty の逆（まだ変更されていない）
+
+       ■ userIdCtrl.pending
+         - 非同期バリデーション実行中
+         - 今回は未使用だが、実務では重要（サーバ照合など）
+
+       Angular はこれらの状態を自動で管理する。
+      ============================================ -->
+
+      <!-- 【touched を使う理由】
+
+       なぜ invalid だけでエラー表示しないのか？
+
+       × 悪い例：
+         *ngIf="userIdCtrl.invalid"
+         → 画面表示直後からエラーが出る（UXが悪い）
+
+       ○ 良い例：
+         userIdCtrl.invalid && userIdCtrl.touched
+         → ユーザが「触った後」にだけエラーを出す
+
+       設計意図：
+       - エラーは「ユーザ操作の結果」として表示する
+       - 初期表示では静かな画面を保つ
+      ============================================ -->
+
+      <!-- 【f.submitted と組み合わせる理由】
+
+       f.submitted：
+       - form が submit されたかどうか（ngSubmit が発火すると true）
+
+       touched だけだと：
+       - 何も触らずにログイン押下 → エラーが出ない
+
+       touched OR submitted にすることで：
+       - 入力途中 → touched で判定（個別表示）
+       - 一括チェック → submitted で判定（全体表示）
+
+       実務で非常によく使われる組み合わせ：
+         invalid && (touched || submitted)
+      ============================================ -->
+
+      <!-- 未入力の場合 -->
+      <div class="error" *ngIf="userIdCtrl.invalid && (userIdCtrl.touched || f.submitted)">
+        ユーザIDの入力は必須です
+      </div>
+    </div>
+
+    <!-- ログイン画面：パスワード入力フォーム -->
+    <div class="login-form-row">
+      <label>
+        パスワード
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          minlength="5"
+          #pwCtrl="ngModel"
+        />
+      </label>
+
+      <!-- 【errors オブジェクトの読み方】
+
+       pwCtrl.errors は「どの制約に違反したか」を表す辞書。
+
+       例：
+       - required が失敗：
+           { required: true }
+
+       - minlength が失敗：
+           {
+             minlength: {
+               requiredLength: 5,
+               actualLength: 3
+             }
+           }
+
+       errors?.['xxx'] とする理由：
+       - errors が null の場合に例外を防ぐ（安全アクセス / Optional Chaining）
+      ============================================ -->
+
+      <div class="error" *ngIf="pwCtrl.errors?.['required'] && (pwCtrl.touched || f.submitted)">
+        パスワードの入力は必須です
       </div>
 
-      <!-- ログイン画面：パスワード入力フォーム -->
-      <div class="login-form-row">
-        <label>
-          パスワード
-          <input
-            type="password"
-            [(ngModel)]="password"
-            name="password"
-            required
-            minlength="4"
-            #pwCtrl="ngModel"
-          />
-        </label>
-        <!-- 未入力の場合 -->
-        <div class="error" *ngIf="pwCtrl.errors?.['required'] && (pwCtrl.touched || f.submitted)">
-          パスワードの入力は必須です
-        </div>
-        <!-- パスワードが4文字未満の場合 -->
-        <div class="error" *ngIf="pwCtrl.errors?.['minlength'] && (pwCtrl.touched || f.submitted)">
-          パスワードは4文字以上入力してください
-        </div>
+      <div class="error" *ngIf="pwCtrl.errors?.['minlength'] && (pwCtrl.touched || f.submitted)">
+        パスワードは5文字以上入力してください
       </div>
+    </div>
 
-      <!-- ログイン画面：ログインボタン -->
-      <!-- clickをやめてsubmitに変更 -->
-      <!-- <button type="button" (click)="onLogin()">ログイン</button> -->
-      <button type="submit" [disabled]="f.invalid || submitting">
-        {{ submitting ? 'ログイン中…' : 'ログイン' }}
-      </button>
+    <!-- ログイン画面：ログインボタン -->
+    <button type="submit" [disabled]="f.invalid || submitting">
+      {{ submitting ? 'ログイン中…' : 'ログイン' }}
+    </button>
 
-      <div class="error" *ngIf="loginError">{{ loginError }}</div>
-
-      <!-- ★「ログイン成功」はログイン前フォーム内では出さない（ログイン後ブロックに移す） -->
-      <!-- <div class="success" *ngIf="loggedIn">ログイン成功</div> -->
-    </form>
+    <div class="error" *ngIf="loginError">{{ loginError }}</div>
   </div>
 
   <!-- =========================
@@ -108,13 +153,28 @@
      loggedIn が true の間だけ表示する
      ========================= -->
   <div *ngIf="loggedIn" class="after-login">
-    <!-- ログイン成功後の表示（状態で画面を切り替えるのが第6章っぽいところ） -->
     <div class="success">ログイン成功</div>
-
-    <!-- userId は入力値として保持されているので、そのまま表示できる -->
     <p>ようこそ、{{ userId }} さん</p>
 
-    <!-- ログアウトで loggedIn=false に戻してフォーム表示へ -->
+    <!-- admin のみ表示 -->
+    <div class="admin-menu" *ngIf="isAdmin">
+      <h3>管理メニュー</h3>
+      <ul>
+        <li>ユーザ一覧</li>
+        <li>メッセージ管理</li>
+        <li>システム設定</li>
+      </ul>
+    </div>
+
+    <!-- user のみ表示 -->
+    <div class="user-menu" *ngIf="isUser">
+      <h3>ユーザメニュー</h3>
+      <ul>
+        <li>プロフィール</li>
+        <li>お知らせ</li>
+      </ul>
+    </div>
+
     <button type="button" (click)="logout()">ログアウト</button>
   </div>
 </form>

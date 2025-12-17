@@ -1,0 +1,14 @@
+<h2>Home</h2>
+
+<p>ログイン後の共通ホーム画面です。</p>
+
+<!--
+  管理者メニュー導線（A案）
+  - ログイン成功直後は role に関係なく /home に統一する
+  - admin のみ、Home 側の導線から /admin に遷移できる
+  - 最終的な防御は Guard（route data.requiredRole）で行う
+-->
+<div *ngIf="isAdmin" class="admin-menu">
+  <h3>管理者メニュー</h3>
+  <a [routerLink]="['/admin']">管理者画面へ</a>
+</div>

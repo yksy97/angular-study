@@ -54,3 +54,20 @@ button {
   font-weight: bold;
   color: #2e7d32;
 }
+
+.admin-menu {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.user-menu {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.note {
+  margin-top: 8px;
+  font-size: 12px;
+}
