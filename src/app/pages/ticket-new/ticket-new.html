@@ -1,0 +1,89 @@
+<div class="page">
+  <div class="card">
+    <header class="head">
+      <a class="back" [routerLink]="['/tickets']">← 一覧へ戻る</a>
+
+      <div class="title-area">
+        <h2 class="title">問い合わせ登録</h2>
+      </div>
+    </header>
+
+    <div class="form">
+      <!-- 件名 -->
+      <div class="field">
+        <div class="label-row">
+          <label class="label" for="subject">件名</label>
+          <span class="req">必須</span>
+        </div>
+        <input
+          id="subject"
+          class="control"
+          type="text"
+          [ngModel]="subject()"
+          (ngModelChange)="subject.set($event)"
+          placeholder="例：ログインできない"
+        />
+      </div>
+
+      <!-- 内容 -->
+      <div class="field">
+        <div class="label-row">
+          <label class="label" for="body">内容</label>
+          <span class="req">必須</span>
+        </div>
+        <textarea
+          id="body"
+          class="control control--textarea"
+          [ngModel]="body()"
+          (ngModelChange)="body.set($event)"
+          placeholder="問い合わせ内容を入力してください"
+        ></textarea>
+      </div>
+
+      <!-- 顧客名 -->
+      <div class="field">
+        <div class="label-row">
+          <label class="label" for="customerName">顧客名</label>
+        </div>
+        <input
+          id="customerName"
+          class="control"
+          type="text"
+          [ngModel]="customerName()"
+          (ngModelChange)="customerName.set($event)"
+          placeholder="例：ABC商事"
+        />
+      </div>
+
+      <!-- 優先度 -->
+      <div class="field">
+        <div class="label-row">
+          <label class="label" for="priority">優先度</label>
+        </div>
+        <select
+          id="priority"
+          class="control"
+          [ngModel]="priority()"
+          (ngModelChange)="priority.set($event)"
+        >
+          <option value="高">高</option>
+          <option value="中">中</option>
+          <option value="低">低</option>
+        </select>
+      </div>
+
+      <div class="error" *ngIf="submitError()">{{ submitError() }}</div>
+
+      <footer class="actions">
+        <button type="button" class="btn btn--ghost" (click)="cancel()" [disabled]="submitting()">
+          キャンセル
+        </button>
+
+        <button type="button" class="btn btn--primary" (click)="submit()" [disabled]="!canSubmit()">
+          <span *ngIf="!submitting()">登録</span>
+          <span *ngIf="submitting()" class="spinner" aria-label="loading"></span>
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>

@@ -1,8 +1,10 @@
-<!-- アプリ共通ヘッダー -->
-<header>
-  <!-- アプリ名（見出し） -->
-  <h1 class="angular-study">🐠angular-study🐡</h1>
+<!-- src/app/app.html -->
+<header class="app-header">
+  <div class="app-header__inner">
+    <h1 class="app-title">angular-study</h1>
+  </div>
 </header>
 
-<!-- タブ表示領域 -->
-<router-outlet></router-outlet>
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>

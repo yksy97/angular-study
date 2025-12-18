@@ -1,0 +1,14 @@
+<h2>問い合わせ詳細</h2>
+
+<p>No: {{ id }}</p>
+
+<label>ステータス</label>
+<select [(ngModel)]="status">
+  <option>未着手</option>
+  <option>対応中</option>
+  <option>完了</option>
+  <option>保留</option>
+  <option>差戻し</option>
+</select>
+
+<button (click)="save()">保存</button>

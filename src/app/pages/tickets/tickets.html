@@ -1,0 +1,136 @@
+<!-- src/app/pages/tickets/tickets.html -->
+<div class="tickets">
+  <header class="tickets-header">
+    <h2 class="tickets-title">問い合わせ一覧</h2>
+    <a class="primary-link" [routerLink]="['/tickets/new']">新規登録</a>
+  </header>
+
+  <!-- フィルター -->
+  <div class="filters">
+    <input
+      class="input"
+      type="text"
+      [ngModel]="keyword()"
+      (ngModelChange)="keyword.set($event)"
+      placeholder="検索ワードを入力してください"
+    />
+
+    <select class="select" [ngModel]="status()" (ngModelChange)="status.set($event)">
+      <option value="">ステータス：すべて</option>
+      <option value="受付">受付</option>
+      <option value="対応中">対応中</option>
+      <option value="完了">完了</option>
+    </select>
+
+    <select class="select" [ngModel]="priority()" (ngModelChange)="priority.set($event)">
+      <option value="">優先度：すべて</option>
+      <option value="高">高</option>
+      <option value="中">中</option>
+      <option value="低">低</option>
+    </select>
+  </div>
+
+  <div class="summary">検索結果：{{ filtered().length }}件（{{ page() }}/{{ totalPages() }}）</div>
+
+  <div class="state" *ngIf="loading()">読み込み中…</div>
+  <div class="state error" *ngIf="!loading() && loadError()">{{ loadError() }}</div>
+
+  <div class="table-wrap" *ngIf="!loading() && !loadError()">
+    <table class="table" *ngIf="paged().length > 0; else emptyTpl">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="sortBy('no')" title="並び替え">
+            No
+            <span class="sort" [class.is-active]="sortKey() === 'no'">
+              {{ sortKey() === 'no' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('subject')" title="並び替え">
+            件名
+            <span class="sort" [class.is-active]="sortKey() === 'subject'">
+              {{ sortKey() === 'subject' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('customerName')" title="並び替え">
+            顧客名
+            <span class="sort" [class.is-active]="sortKey() === 'customerName'">
+              {{ sortKey() === 'customerName' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('status')" title="並び替え">
+            ステータス
+            <span class="sort" [class.is-active]="sortKey() === 'status'">
+              {{ sortKey() === 'status' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('priority')" title="並び替え">
+            優先度
+            <span class="sort" [class.is-active]="sortKey() === 'priority'">
+              {{ sortKey() === 'priority' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('createdAt')" title="並び替え">
+            作成日
+            <span class="sort" [class.is-active]="sortKey() === 'createdAt'">
+              {{ sortKey() === 'createdAt' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="sortBy('updatedAt')" title="並び替え">
+            更新日
+            <span class="sort" [class.is-active]="sortKey() === 'updatedAt'">
+              {{ sortKey() === 'updatedAt' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of paged()">
+          <td class="mono">{{ t.no }}</td>
+
+          <!-- 件名が詳細リンク -->
+          <td>
+            <a class="subject-link" [routerLink]="['/tickets', t.no]">{{ t.subject }}</a>
+          </td>
+
+          <!-- 顧客名：未登録プレースホルダ -->
+          <td>
+            <span *ngIf="t.customerName; else unassigned">{{ t.customerName }}</span>
+            <ng-template #unassigned>
+              <span class="placeholder">未登録</span>
+            </ng-template>
+          </td>
+
+          <!-- ステータス：色だけ -->
+          <td>
+            <span class="meta meta-status" [attr.data-v]="t.status">{{ t.status }}</span>
+          </td>
+
+          <!-- 優先度：色は静か -->
+          <td>
+            <span class="meta meta-priority">{{ t.priority }}</span>
+          </td>
+
+          <td class="mono">{{ t.createdAt }}</td>
+          <td class="mono">{{ t.updatedAt }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #emptyTpl>
+      <div class="empty">該当するデータがありません</div>
+    </ng-template>
+  </div>
+
+  <!-- ページング -->
+  <div class="pager" *ngIf="!loading() && !loadError()">
+    <button class="btn" (click)="prev()" [disabled]="page() === 1">前へ</button>
+    <button class="btn" (click)="next()" [disabled]="page() === totalPages()">次へ</button>
+  </div>
+</div>

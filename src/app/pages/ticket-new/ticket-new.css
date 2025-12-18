@@ -1,0 +1,202 @@
+/* ページ全体：横に広がりすぎない */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 22px 18px 48px;
+}
+
+/* カード：Google系の「白い面＋影」 */
+.card {
+  max-width: 720px;
+  margin: 0 auto;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.head {
+  padding: 18px 18px 8px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.title-area {
+  margin-top: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+/* フォーム本体 */
+.form {
+  padding: 14px 18px 18px;
+}
+
+.field {
+  margin-top: 14px;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.req {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+
+  color: #991b1b;
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+/* 入力系：幅100%・綺麗に */
+.control {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 12px 12px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.control:focus {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+.control--textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* エラー */
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  color: #991b1b;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.18);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ボタン */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+
+  transition: box-shadow 0.15s ease, transform 0.05s ease, background 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Googleっぽい主ボタン */
+.btn--primary {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.22);
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* スピナー（登録中） */
+.spinner {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  border-radius: 999px;
+
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: rgba(255, 255, 255, 1);
+
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

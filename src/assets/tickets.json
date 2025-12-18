@@ -1,0 +1,217 @@
+{
+  "tickets": [
+    {
+      "no": 21,
+      "subject": "ログインできない",
+      "body": "パスワード再設定でもログイン不可。",
+      "customerName": "ABC商事",
+      "status": "受付",
+      "priority": "高",
+      "createdAt": "2025-12-18",
+      "updatedAt": "2025-12-18"
+    },
+    {
+      "no": 20,
+      "subject": "請求書の再発行依頼",
+      "body": "先月分の請求書PDFが必要。",
+      "customerName": "ABC商事",
+      "status": "対応中",
+      "priority": "中",
+      "createdAt": "2025-12-17",
+      "updatedAt": "2025-12-18"
+    },
+    {
+      "no": 19,
+      "subject": "契約内容の確認",
+      "body": "契約期間と自動更新条件の確認。",
+      "customerName": "XYZ株式会社",
+      "status": "完了",
+      "priority": "低",
+      "createdAt": "2025-12-16",
+      "updatedAt": "2025-12-18"
+    },
+
+    {
+      "no": 18,
+      "subject": "画面が真っ白になる",
+      "body": "特定操作後に画面が白くなる。",
+      "customerName": "",
+      "status": "受付",
+      "priority": "高",
+      "createdAt": "2025-12-16",
+      "updatedAt": "2025-12-16"
+    },
+    {
+      "no": 17,
+      "subject": "通知メールが届かない",
+      "body": "迷惑メールにも無い。",
+      "customerName": "NPOテスト",
+      "status": "対応中",
+      "priority": "中",
+      "createdAt": "2025-12-15",
+      "updatedAt": "2025-12-17"
+    },
+    {
+      "no": 16,
+      "subject": "検索が遅い",
+      "body": "キーワード検索が数十秒かかる。",
+      "customerName": "テスト株式会社",
+      "status": "受付",
+      "priority": "中",
+      "createdAt": "2025-12-15",
+      "updatedAt": "2025-12-16"
+    },
+    {
+      "no": 15,
+      "subject": "CSV出力の文字化け",
+      "body": "Excelで開くと文字化け。",
+      "customerName": "サンプル商店",
+      "status": "対応中",
+      "priority": "高",
+      "createdAt": "2025-12-14",
+      "updatedAt": "2025-12-18"
+    },
+    {
+      "no": 14,
+      "subject": "権限が足りないと表示される",
+      "body": "本来見れるはずの画面で403。",
+      "customerName": "",
+      "status": "受付",
+      "priority": "中",
+      "createdAt": "2025-12-14",
+      "updatedAt": "2025-12-14"
+    },
+    {
+      "no": 13,
+      "subject": "パスワード変更ができない",
+      "body": "保存時にエラーになる。",
+      "customerName": "ABC商事",
+      "status": "完了",
+      "priority": "低",
+      "createdAt": "2025-12-13",
+      "updatedAt": "2025-12-16"
+    },
+    {
+      "no": 12,
+      "subject": "請求先住所の更新依頼",
+      "body": "請求先住所を変更したい。",
+      "customerName": "XYZ株式会社",
+      "status": "受付",
+      "priority": "低",
+      "createdAt": "2025-12-13",
+      "updatedAt": "2025-12-13"
+    },
+
+    {
+      "no": 11,
+      "subject": "添付ファイルがアップロードできない",
+      "body": "10MB以下でも失敗する。",
+      "customerName": "テスト株式会社",
+      "status": "対応中",
+      "priority": "高",
+      "createdAt": "2025-12-12",
+      "updatedAt": "2025-12-17"
+    },
+    {
+      "no": 10,
+      "subject": "登録後に一覧に反映されない",
+      "body": "登録したが一覧に出ない。",
+      "customerName": "",
+      "status": "受付",
+      "priority": "高",
+      "createdAt": "2025-12-12",
+      "updatedAt": "2025-12-12"
+    },
+    {
+      "no": 9,
+      "subject": "二重登録される",
+      "body": "保存ボタン連打で重複する。",
+      "customerName": "サンプル商店",
+      "status": "対応中",
+      "priority": "中",
+      "createdAt": "2025-12-11",
+      "updatedAt": "2025-12-18"
+    },
+    {
+      "no": 8,
+      "subject": "スマホ表示が崩れる",
+      "body": "iPhoneでボタンが押せない。",
+      "customerName": "NPOテスト",
+      "status": "受付",
+      "priority": "中",
+      "createdAt": "2025-12-11",
+      "updatedAt": "2025-12-11"
+    },
+    {
+      "no": 7,
+      "subject": "入力欄の必須チェックが効かない",
+      "body": "空欄で登録できてしまう。",
+      "customerName": "ABC商事",
+      "status": "完了",
+      "priority": "中",
+      "createdAt": "2025-12-10",
+      "updatedAt": "2025-12-15"
+    },
+    {
+      "no": 6,
+      "subject": "ログアウトできない",
+      "body": "押しても画面が変わらない。",
+      "customerName": "",
+      "status": "受付",
+      "priority": "低",
+      "createdAt": "2025-12-10",
+      "updatedAt": "2025-12-10"
+    },
+
+    {
+      "no": 5,
+      "subject": "表示が英語になる",
+      "body": "一部ラベルが英語表記。",
+      "customerName": "XYZ株式会社",
+      "status": "対応中",
+      "priority": "低",
+      "createdAt": "2025-12-09",
+      "updatedAt": "2025-12-16"
+    },
+    {
+      "no": 4,
+      "subject": "データの並び順がおかしい",
+      "body": "作成日順になっていない。",
+      "customerName": "テスト株式会社",
+      "status": "受付",
+      "priority": "中",
+      "createdAt": "2025-12-09",
+      "updatedAt": "2025-12-09"
+    },
+    {
+      "no": 3,
+      "subject": "請求金額が違う",
+      "body": "割引が反映されていない。",
+      "customerName": "",
+      "status": "完了",
+      "priority": "高",
+      "createdAt": "2025-12-08",
+      "updatedAt": "2025-12-18"
+    },
+    {
+      "no": 2,
+      "subject": "アカウント作成に失敗する",
+      "body": "登録ボタンでエラー表示。",
+      "customerName": "ABC商事",
+      "status": "対応中",
+      "priority": "高",
+      "createdAt": "2025-12-08",
+      "updatedAt": "2025-12-17"
+    },
+    {
+      "no": 1,
+      "subject": "初期セットアップ手順が知りたい",
+      "body": "初回ログイン後の手順を教えてほしい。",
+      "customerName": "",
+      "status": "受付",
+      "priority": "低",
+      "createdAt": "2025-12-07",
+      "updatedAt": "2025-12-07"
+    }
+  ]
+}

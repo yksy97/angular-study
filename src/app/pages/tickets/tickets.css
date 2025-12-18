@@ -1,0 +1,203 @@
+/* =========================
+   全体
+   ========================= */
+.tickets {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+/* =========================
+   ヘッダー
+   ========================= */
+.tickets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tickets-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* =========================
+   フィルタ
+   ========================= */
+.filters {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  gap: 10px;
+  margin: 12px 0 14px;
+}
+
+.input,
+.select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  background: rgba(255, 255, 255, 0.85);
+  outline: none;
+}
+
+.input:focus,
+.select:focus {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* =========================
+   状態表示
+   ========================= */
+.summary {
+  color: #4b5563;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.state {
+  color: #4b5563;
+  padding: 10px 0;
+}
+
+.state.error {
+  color: #991b1b;
+}
+
+/* =========================
+   テーブル
+   ========================= */
+.table-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(17, 24, 39, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  text-align: left;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+th {
+  font-size: 12px;
+  color: #4b5563;
+  background: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+}
+
+/* 行ホバー（控えめ・実務向け） */
+tbody tr:hover {
+  background: rgba(59, 130, 246, 0.04);
+}
+
+/* =========================
+   ソート（気づけるけど主張しない）
+   ========================= */
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.sortable:hover {
+  background: rgba(17, 24, 39, 0.03);
+}
+
+.sort {
+  margin-left: 6px;
+  font-size: 11px;
+  color: #9ca3af;
+  opacity: 0.35;
+}
+
+.sort.is-active {
+  opacity: 0.85;
+  color: #6b7280;
+}
+
+/* =========================
+   ステータス／優先度（文字だけ）
+   ========================= */
+.meta {
+  font-weight: 400;
+  color: #111827;
+}
+
+.meta::before,
+.meta::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* ステータス（3つだけ） */
+.meta-status {
+  color: #374151;
+}
+
+.meta-status[data-v='受付'] {
+  color: #6b7280;
+}
+
+.meta-status[data-v='対応中'] {
+  color: #2563eb;
+}
+
+.meta-status[data-v='完了'] {
+  color: #059669;
+}
+
+/* 優先度は色を付けない */
+.meta-priority {
+  color: #374151;
+}
+
+/* =========================
+   その他
+   ========================= */
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  color: #6b7280;
+  text-align: center;
+  padding: 18px;
+}
+
+.pager {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  background: rgba(255, 255, 255, 0.85);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 未登録プレースホルダ */
+.placeholder {
+  color: #9ca3af;
+}
