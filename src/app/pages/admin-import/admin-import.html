@@ -1,0 +1,109 @@
+<div class="page">
+  <header class="header">
+    <h2 class="title">CSV取り込み</h2>
+    <a class="back" [routerLink]="['/home']">← Homeへ</a>
+  </header>
+
+  <div class="card">
+    <section class="lead">
+      <p class="lead__title">CSVファイルを選択して、問い合わせをまとめて登録します。</p>
+      <p class="lead__desc">
+        ヘッダー行（見出し）を含む CSV（UTF-8）をご用意ください。値にカンマや改行が入る場合は
+        <code>"</code> で囲む一般的な形式に対応しています。
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div class="panel__title">1. ファイルを選択</div>
+        <div class="panel__sub" *ngIf="selectedFileName()">選択中：{{ selectedFileName() }}</div>
+      </div>
+
+      <div class="filebox">
+        <input
+          class="filebox__input"
+          type="file"
+          accept=".csv,text/csv"
+          (change)="onFileChange($event)"
+        />
+
+        <div class="filebox__actions">
+          <button class="btn btn--primary" (click)="runImport()" [disabled]="!canImport">
+            {{ busy() ? '取り込み中…' : '取り込み開始' }}
+          </button>
+
+          <button class="btn" type="button" (click)="clearFile()" [disabled]="busy()">
+            選択解除
+          </button>
+        </div>
+
+        <p class="filebox__hint" *ngIf="!selectedFileName()">
+          取り込みたい CSV を選択してください（ドラッグ&ドロップは未対応）
+        </p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div class="panel__title">2. CSVの例</div>
+        <div class="panel__sub">（見出し行＋データ行）</div>
+      </div>
+
+      <pre class="sample" aria-label="CSV sample">
+件名,内容,顧客名,優先度,担当者
+ログインできない,パスワード再設定でもログイン不可。,ABC商事,高,山田
+請求先住所の更新依頼,請求先住所を更新してほしい。,XYZ株式会社,中,篠田
+</pre
+      >
+
+      <ul class="notes">
+        <li>1行目は見出し（ヘッダー）として扱います</li>
+        <li>値にカンマや改行が入る場合は <code>"</code> で囲んでください</li>
+        <li>取り込み結果はこの画面に表示されます</li>
+      </ul>
+    </section>
+
+    <!-- 結果 -->
+    <section class="result" *ngIf="successMessage() || errors().length > 0">
+      <div class="success" *ngIf="successMessage()">
+        <div class="success__title">取り込みが完了しました</div>
+        <div class="success__desc">{{ successMessage() }}</div>
+
+        <div class="success__actions">
+          <button
+            class="btn"
+            type="button"
+            (click)="downloadAllPdf()"
+            [disabled]="importedTickets().length === 0 || exporting()"
+          >
+            {{ exporting() ? 'PDF出力中…' : '取り込んだ分をPDF一括出力' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="errors" *ngIf="errors().length > 0">
+        <div class="errors__head">
+          <div class="errors__title">取り込みできない行があります</div>
+          <div class="errors__count">{{ errors().length }}件</div>
+        </div>
+
+        <div class="errors__desc">CSVの内容を見直して、再度取り込みをお試しください。</div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="colLine">行</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of errors()">
+              <td class="colLine">{{ e.line }}</td>
+              <td>{{ e.message }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

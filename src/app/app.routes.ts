@@ -2,7 +2,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { Home } from './pages/home/home';
-import { Admin } from './pages/admin/admin';
 import { Tickets } from './pages/tickets/tickets';
 import { authGuard } from './guards/auth-guard';
 
@@ -28,7 +27,12 @@ export const routes: Routes = [
           import('./pages/ticket-detail/ticket-detail').then((m) => m.TicketDetail),
       },
 
-      { path: 'admin', component: Admin, data: { requiredRole: 'admin' } },
+      // 管理者（直リンクでCSV取り込みへ）
+      {
+        path: 'admin/import',
+        loadComponent: () => import('./pages/admin-import/admin-import').then((m) => m.AdminImport),
+        data: { requiredRole: 'admin' },
+      },
     ],
   },
 ];

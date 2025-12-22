@@ -1,14 +1,87 @@
-<h2>問い合わせ詳細</h2>
+<div class="page">
+  <header class="header">
+    <h2>問い合わせ詳細</h2>
+    <a class="back" [routerLink]="['/tickets']">← 一覧へ</a>
+  </header>
 
-<p>No: {{ id }}</p>
+  <div class="card" *ngIf="!loading(); else loadingTpl">
+    <div class="error" *ngIf="loadError()">{{ loadError() }}</div>
 
-<label>ステータス</label>
-<select [(ngModel)]="status">
-  <option>未着手</option>
-  <option>対応中</option>
-  <option>完了</option>
-  <option>保留</option>
-  <option>差戻し</option>
-</select>
+    <ng-container *ngIf="ticket() as t; else notFoundTpl">
+      <div class="meta">
+        <span class="chip">No. {{ t.no }}</span>
+        <span class="chip">作成日: {{ t.createdAt }}</span>
+        <span class="chip">更新日: {{ t.updatedAt }}</span>
+        <span class="chip" [attr.data-status]="t.status">ステータス: {{ t.status }}</span>
+        <span class="chip pri" [attr.data-priority]="t.priority">優先度: {{ t.priority }}</span>
 
-<button (click)="save()">保存</button>
+        <span class="dirty" *ngIf="hasChanges()">
+          ※変更を確定する場合は保存ボタンを押してください
+        </span>
+      </div>
+
+      <h3 class="subject">{{ t.subject }}</h3>
+
+      <p class="customer">
+        顧客名:
+        <span *ngIf="t.customerName; else noCustomer">{{ t.customerName }}</span>
+        <ng-template #noCustomer>—</ng-template>
+      </p>
+
+      <div class="body">
+        {{ t.body }}
+      </div>
+
+      <!-- 担当者 + ステータス 横並び -->
+      <div class="row">
+        <div class="field">
+          <label>担当者</label>
+          <input
+            class="control"
+            type="text"
+            placeholder="—"
+            [ngModel]="assignee()"
+            (ngModelChange)="assignee.set($event)"
+          />
+        </div>
+
+        <div class="field">
+          <label>ステータス</label>
+          <select class="control" [ngModel]="status()" (ngModelChange)="status.set($event)">
+            <option value="受付">受付</option>
+            <option value="対応中">対応中</option>
+            <option value="完了">完了</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ✅ キャンセルは左下 / それ以外は右下 -->
+      <div class="actions">
+        <button class="btn btn--ghost actions-left" type="button" (click)="cancel()">
+          キャンセル
+        </button>
+
+        <button class="btn" type="button" (click)="downloadPdf()" [disabled]="!ticket()">
+          PDF出力
+        </button>
+
+        <button class="btn btn--primary" type="button" (click)="save()" [disabled]="!canSave()">
+          保存
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #notFoundTpl>
+      <p class="muted">対象の問い合わせが見つかりません。</p>
+      <div class="actions">
+        <button class="btn btn--primary" type="button" (click)="cancel()">一覧へ戻る</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="card">
+      <p class="muted">読み込み中…</p>
+    </div>
+  </ng-template>
+</div>

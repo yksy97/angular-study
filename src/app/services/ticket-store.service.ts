@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+// src/app/services/ticket-store.service.ts
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -12,14 +13,25 @@ export type Ticket = {
   customerName: string;
   status: Status;
   priority: Priority;
+  assignee?: string;
   createdAt: string; // YYYY-MM-DD
   updatedAt: string; // YYYY-MM-DD
+};
+
+export type TicketInput = {
+  subject: string;
+  body: string;
+  customerName: string;
+  priority: Priority;
+  assignee?: string;
 };
 
 type TicketsJson = { tickets: Ticket[] };
 
 const LS_KEY = 'tickets.v1';
+const ASSETS_URL = '/assets/tickets.json';
 
+// ====== utils（pure） ======
 function today(): string {
   const d = new Date();
   const y = d.getFullYear();
@@ -28,11 +40,14 @@ function today(): string {
   return `${y}-${m}-${day}`;
 }
 
-/** 旧ステータスや不正値は「受付」に寄せる（運用ラク＆壊れない） */
 function normalizeStatus(v: unknown): Status {
   if (v === '受付' || v === '対応中' || v === '完了') return v;
-  // 旧: 未着手/保留/差戻し など、または null/undefined/その他
   return '受付';
+}
+
+function normalizePriority(v: unknown): Priority {
+  if (v === '高' || v === '中' || v === '低') return v;
+  return '中';
 }
 
 function safeParse(raw: string | null): unknown {
@@ -63,14 +78,13 @@ function coerceTicket(input: any): Ticket | null {
   const customerName = String(input.customerName ?? '').trim();
   const body = String(input.body ?? '').trim();
 
-  // priority は壊れてても中に寄せる（運用ラク）
-  const p = input.priority;
-  const priority: Priority = p === '高' || p === '低' || p === '中' ? p : '中';
+  const priority = normalizePriority(input.priority);
+  const status = normalizeStatus(input.status);
 
   const createdAt = String(input.createdAt ?? '').trim() || today();
   const updatedAt = String(input.updatedAt ?? '').trim() || createdAt;
 
-  const status: Status = normalizeStatus(input.status);
+  const assignee = String(input.assignee ?? '').trim();
 
   return {
     no,
@@ -79,6 +93,7 @@ function coerceTicket(input: any): Ticket | null {
     customerName,
     status,
     priority,
+    assignee,
     createdAt,
     updatedAt,
   };
@@ -94,75 +109,146 @@ function coerceTicketArray(raw: unknown): Ticket[] | null {
   return out;
 }
 
+function nextNoFrom(list: Ticket[]): number {
+  return list.reduce((max, t) => Math.max(max, t.no), 0) + 1;
+}
+
+// ====== Signal Store（state + selectors + actions） ======
+type TicketState = {
+  tickets: Ticket[];
+  initialized: boolean;
+};
+
+const initialState: TicketState = {
+  tickets: [],
+  initialized: false,
+};
+
 @Injectable({ providedIn: 'root' })
 export class TicketStore {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
-  private readonly _tickets = signal<Ticket[]>([]);
-  readonly tickets = this._tickets.asReadonly();
+  // --- state（1本化） ---
+  private readonly state = signal<TicketState>(initialState);
+
+  // --- selectors（読み取り専用） ---
+  private readonly _tickets = computed(() => this.state().tickets);
+
+  /** 既存互換：component側は store.tickets() で読める */
+  readonly tickets = computed(() => this._tickets());
 
   readonly count = computed(() => this._tickets().length);
 
+  /** 既存互換：find(no) */
+  find(no: number): Ticket | null {
+    return this._tickets().find((t) => t.no === no) ?? null;
+  }
+
   /** 初回起動で1回だけ呼ぶ（一覧のngOnInitなどでOK） */
   async initOnce(): Promise<void> {
-    if (this._tickets().length > 0) return;
+    if (this.state().initialized) return;
 
-    // 1) localStorage があればそれを採用（status正規化込み）
+    // 1) localStorage
     const fromLSRaw = safeParse(localStorage.getItem(LS_KEY));
     const fromLS = coerceTicketArray(fromLSRaw);
     if (fromLS) {
-      this._tickets.set(fromLS);
-      // 念のため正規化後で保存し直す（旧ステータスが残らない）
-      saveToLS(fromLS);
+      this.patchState({ tickets: fromLS, initialized: true });
+      saveToLS(fromLS); // 正規化後で保存し直す
       return;
     }
 
-    // 2) 無ければ assets を seed として読み込む（status正規化込み）
-    const data = await firstValueFrom(this.http.get<TicketsJson>('/assets/tickets.json'));
+    // 2) assets seed
+    const data = await firstValueFrom(this.http.get<TicketsJson>(ASSETS_URL));
     const seedRaw = (data?.tickets ?? []) as unknown;
     const seed = coerceTicketArray(seedRaw) ?? [];
 
-    this._tickets.set(seed);
+    this.patchState({ tickets: seed, initialized: true });
     saveToLS(seed);
   }
 
-  add(input: { subject: string; body: string; customerName: string; priority: Priority }): Ticket {
+  // --- actions（更新系はここに集約） ---
+  add(input: TicketInput): Ticket {
     const now = today();
     const current = this._tickets();
-
-    const nextNo = current.reduce((max, t) => Math.max(max, t.no), 0) + 1;
+    const no = nextNoFrom(current);
 
     const created: Ticket = {
-      no: nextNo,
-      subject: input.subject,
-      body: input.body,
-      customerName: input.customerName,
-      status: '受付', // ★ ここが変更点（未着手→受付）
+      no,
+      subject: input.subject.trim(),
+      body: input.body.trim(),
+      customerName: input.customerName.trim(),
+      status: '受付',
       priority: input.priority,
+      assignee: (input.assignee ?? '').trim(),
       createdAt: now,
       updatedAt: now,
     };
 
     const next = [created, ...current];
-    this._tickets.set(next);
-    saveToLS(next);
-
+    this.setTickets(next);
     return created;
   }
 
-  find(no: number): Ticket | null {
-    return this._tickets().find((t) => t.no === no) ?? null;
+  /** CSV取込用：一括追加（全件OKのinputsのみ来る想定） */
+  bulkAdd(inputs: TicketInput[]): number {
+    if (!inputs.length) return 0;
+
+    const now = today();
+    const current = this._tickets();
+
+    let no = nextNoFrom(current);
+
+    const createdList: Ticket[] = inputs.map((x) => ({
+      no: no++,
+      subject: x.subject.trim(),
+      body: x.body.trim(),
+      customerName: x.customerName.trim(),
+      status: '受付',
+      priority: x.priority,
+      assignee: (x.assignee ?? '').trim(),
+      createdAt: now,
+      updatedAt: now,
+    }));
+
+    // 取り込み分を先頭に（CSVの先頭行が上に来るよう reverse して積む）
+    const next = [...createdList.reverse(), ...current];
+    this.setTickets(next);
+
+    return createdList.length;
   }
 
   updateStatus(no: number, status: Status): void {
+    this.update(no, { status });
+  }
+
+  /** 詳細画面で利用：status / assignee をまとめて更新 */
+  update(no: number, patch: { status?: Status; assignee?: string }): void {
     const now = today();
-    const normalized = normalizeStatus(status);
+    const next = this._tickets().map((t) => {
+      if (t.no !== no) return t;
 
-    const next = this._tickets().map((t) =>
-      t.no === no ? { ...t, status: normalized, updatedAt: now } : t
-    );
+      const status = patch.status !== undefined ? normalizeStatus(patch.status) : t.status;
+      const assignee =
+        patch.assignee !== undefined ? patch.assignee.trim() : (t.assignee ?? '').trim();
 
-    this._tickets.set(next);
-    saveToLS(next);
+      return { ...t, status, assignee, updatedAt: now };
+    });
+
+    this.setTickets(next);
+  }
+
+  /** 便利：全消し（学習用・デバッグ用） */
+  clearAll(): void {
+    this.setTickets([]);
+  }
+
+  // --- internal helpers ---
+  private patchState(patch: Partial<TicketState>): void {
+    this.state.update((s) => ({ ...s, ...patch }));
+  }
+
+  private setTickets(tickets: Ticket[]): void {
+    this.patchState({ tickets });
+    saveToLS(tickets);
   }
 }

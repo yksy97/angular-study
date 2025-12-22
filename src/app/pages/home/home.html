@@ -1,23 +1,29 @@
-<!-- src/app/pages/home/home.html -->
 <div class="home" [class.admin]="isAdmin()">
   <header class="home-header">
     <h2 class="home-title">Home</h2>
-    <span *ngIf="isAdmin()" class="admin-badge rainbow"></span>
+    <p class="home-description">ログイン後の共通ホーム画面です。</p>
   </header>
 
-  <p class="home-description">ログイン後の共通ホーム画面です。</p>
+  <!-- 通常操作 -->
+  <section class="menu-card">
+    <h3 class="menu-title">通常メニュー</h3>
 
-  <div class="admin-menu">
-    <h3>メニュー</h3>
+    <div class="menu-grid">
+      <a class="btn" [routerLink]="['/tickets']">問い合わせ一覧</a>
+      <a class="btn" [routerLink]="['/tickets/new']">問い合わせ登録</a>
+    </div>
+  </section>
 
-    <!-- 問い合わせ一覧 -->
-    <a class="nav-link" [routerLink]="['/tickets']">問い合わせ一覧</a>
+  <!-- 管理者操作 -->
+  <section *ngIf="isAdmin()" class="menu-card admin-card">
+    <h3 class="menu-title">管理者メニュー</h3>
 
-    <!-- 問い合わせ登録 -->
-    <a class="nav-link" [routerLink]="['/tickets/new']">問い合わせ登録</a>
+    <div class="menu-grid">
+      <a class="btn btn--admin-outline" [routerLink]="['/admin/import']"> CSV取り込み </a>
+    </div>
+  </section>
 
-    <a *ngIf="isAdmin()" class="admin-link" [routerLink]="['/admin']">管理者画面</a>
+  <div class="footer">
+    <button class="logout-button" (click)="logout()">ログアウト</button>
   </div>
-
-  <button class="logout-button" (click)="logout()">ログアウト</button>
 </div>

@@ -44,12 +44,12 @@
 
 .title {
   margin: 0;
-  font-size: 26px;
-  font-weight: 850;
-  letter-spacing: 0.01em;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
   color: #0f172a;
 }
-
 .subtitle {
   margin: 6px 0 0;
   font-size: 13px;

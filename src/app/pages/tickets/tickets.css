@@ -1,3 +1,5 @@
+/* src/app/pages/tickets/tickets.css */
+
 /* =========================
    全体
    ========================= */
@@ -5,6 +7,15 @@
   max-width: 980px;
   margin: 0 auto;
   padding: 18px;
+
+  --btn-h: 38px;
+  --btn-radius: 12px;
+  --btn-border: rgba(17, 24, 39, 0.18);
+  --btn-bg: rgba(255, 255, 255, 0.86);
+  --btn-bg-hover: rgba(255, 255, 255, 0.96);
+  --btn-text: #111827;
+  --btn-muted: rgba(17, 24, 39, 0.55);
+  --btn-focus: rgba(59, 130, 246, 0.18);
 }
 
 /* =========================
@@ -12,16 +23,110 @@
    ========================= */
 .tickets-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
 .tickets-title {
   margin: 0;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700; /* ✅ 少し落とす（好みで600でもOK） */
   letter-spacing: 0.02em;
+  line-height: 1.2;
+  padding-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   ボタン（統一）
+   ========================= */
+.btn,
+.btn-secondary {
+  height: var(--btn-h);
+  padding: 0 12px;
+  border-radius: var(--btn-radius);
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-weight: 600; /* ✅ 太字やめる */
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  transition: background 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.btn:hover:not([disabled]),
+.btn-secondary:hover:not([disabled]) {
+  background: var(--btn-bg-hover);
+  box-shadow: 0 10px 18px rgba(17, 24, 39, 0.06);
+  transform: translateY(-1px);
+}
+
+.btn:active:not([disabled]),
+.btn-secondary:active:not([disabled]) {
+  transform: translateY(0px);
+  box-shadow: 0 6px 12px rgba(17, 24, 39, 0.05);
+}
+
+.btn:focus-visible,
+.btn-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--btn-focus);
+}
+
+.btn[disabled],
+.btn-secondary[disabled] {
+  opacity: 0.55;
+  color: var(--btn-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* 新規登録リンク（太字やめる） */
+.primary-link {
+  height: var(--btn-h);
+  padding: 0 14px;
+  border-radius: var(--btn-radius);
+  text-decoration: none;
+  font-weight: 600; /* ✅ 太字やめる */
+  font-size: 13px;
+  color: #fff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.2);
+
+  transition: filter 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.primary-link:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.26);
+  transform: translateY(-1px);
+}
+.primary-link:active {
+  transform: translateY(0px);
 }
 
 /* =========================
@@ -41,6 +146,7 @@
   border: 1px solid rgba(17, 24, 39, 0.18);
   background: rgba(255, 255, 255, 0.85);
   outline: none;
+  min-width: 0;
 }
 
 .input:focus,
@@ -57,12 +163,14 @@
   font-size: 13px;
   margin-bottom: 10px;
 }
+.summary-sel {
+  color: #6b7280;
+}
 
 .state {
   color: #4b5563;
   padding: 10px 0;
 }
-
 .state.error {
   color: #991b1b;
 }
@@ -95,72 +203,81 @@ th {
   font-size: 12px;
   color: #4b5563;
   background: rgba(255, 255, 255, 0.9);
-  font-weight: 700;
+  font-weight: 600; /* ✅ 太字やめる */
 }
 
-/* 行ホバー（控えめ・実務向け） */
+/* チェック */
+.col-check {
+  width: 34px;
+  text-align: center;
+}
+.col-check input[type='checkbox'] {
+  transform: translateY(1px);
+}
+
 tbody tr:hover {
   background: rgba(59, 130, 246, 0.04);
 }
 
+/* 件名リンク（太字やめる） */
+.subject-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 400;
+}
+.subject-link:hover {
+  text-decoration: underline;
+}
+
 /* =========================
-   ソート（気づけるけど主張しない）
+   ソート
    ========================= */
 th.sortable {
   cursor: pointer;
   user-select: none;
 }
-
 th.sortable:hover {
   background: rgba(17, 24, 39, 0.03);
 }
-
 .sort {
   margin-left: 6px;
   font-size: 11px;
   color: #9ca3af;
   opacity: 0.35;
 }
-
 .sort.is-active {
   opacity: 0.85;
   color: #6b7280;
 }
 
 /* =========================
-   ステータス／優先度（文字だけ）
+   ステータス／優先度：テキスト色のみ（✅ CSS rgb は 0〜255）
    ========================= */
-.meta {
+.tickets .meta {
   font-weight: 400;
   color: #111827;
 }
 
-.meta::before,
-.meta::after {
-  content: none !important;
-  display: none !important;
+/* ステータス */
+.tickets .meta-status[data-v='受付'] {
+  color: rgb(89, 94, 102);
+}
+.tickets .meta-status[data-v='対応中'] {
+  color: rgb(31, 74, 140);
+}
+.tickets .meta-status[data-v='完了'] {
+  color: rgb(28, 115, 56);
 }
 
-/* ステータス（3つだけ） */
-.meta-status {
-  color: #374151;
+/* 優先度 */
+.tickets .meta-priority[data-v='高'] {
+  color: rgb(153, 31, 31);
 }
-
-.meta-status[data-v='受付'] {
-  color: #6b7280;
+.tickets .meta-priority[data-v='中'] {
+  color: rgb(140, 89, 26);
 }
-
-.meta-status[data-v='対応中'] {
-  color: #2563eb;
-}
-
-.meta-status[data-v='完了'] {
-  color: #059669;
-}
-
-/* 優先度は色を付けない */
-.meta-priority {
-  color: #374151;
+.tickets .meta-priority[data-v='低'] {
+  color: rgb(41, 115, 51);
 }
 
 /* =========================
@@ -176,28 +293,43 @@ th.sortable:hover {
   padding: 18px;
 }
 
+.placeholder {
+  color: #9ca3af;
+}
+
+/* =========================
+   ページャー
+   ========================= */
 .pager {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  align-items: center;
   margin-top: 12px;
+  flex-wrap: nowrap;
+}
+.pager .btn {
+  min-width: 86px;
 }
 
-.btn {
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(17, 24, 39, 0.18);
-  background: rgba(255, 255, 255, 0.85);
-  font-weight: 800;
-  cursor: pointer;
-}
+/* =========================
+   レスポンシブ
+   ========================= */
+@media (max-width: 760px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
 
-.btn[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+  .tickets-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-/* 未登録プレースホルダ */
-.placeholder {
-  color: #9ca3af;
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .pager {
+    justify-content: flex-start;
+  }
 }

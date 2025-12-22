@@ -2,7 +2,35 @@
 <div class="tickets">
   <header class="tickets-header">
     <h2 class="tickets-title">問い合わせ一覧</h2>
-    <a class="primary-link" [routerLink]="['/tickets/new']">新規登録</a>
+
+    <div class="header-actions">
+      <button
+        class="btn btn-secondary"
+        (click)="exportCsv()"
+        [disabled]="loading() || !!loadError()"
+      >
+        CSV出力
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        (click)="exportPdfAll()"
+        [disabled]="loading() || !!loadError()"
+      >
+        PDF出力（一覧）
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        (click)="exportPdfSelected()"
+        [disabled]="loading() || !!loadError() || vm.selectedCount() === 0"
+        title="チェックした行だけPDFに出力"
+      >
+        PDF出力（選択: {{ vm.selectedCount() }}件）
+      </button>
+
+      <a class="primary-link" [routerLink]="['/tickets/new']">新規登録</a>
+    </div>
   </header>
 
   <!-- フィルター -->
@@ -10,19 +38,19 @@
     <input
       class="input"
       type="text"
-      [ngModel]="keyword()"
-      (ngModelChange)="keyword.set($event)"
+      [ngModel]="vm.keyword()"
+      (ngModelChange)="vm.keyword.set($event)"
       placeholder="検索ワードを入力してください"
     />
 
-    <select class="select" [ngModel]="status()" (ngModelChange)="status.set($event)">
+    <select class="select" [ngModel]="vm.status()" (ngModelChange)="vm.status.set($event)">
       <option value="">ステータス：すべて</option>
       <option value="受付">受付</option>
       <option value="対応中">対応中</option>
       <option value="完了">完了</option>
     </select>
 
-    <select class="select" [ngModel]="priority()" (ngModelChange)="priority.set($event)">
+    <select class="select" [ngModel]="vm.priority()" (ngModelChange)="vm.priority.set($event)">
       <option value="">優先度：すべて</option>
       <option value="高">高</option>
       <option value="中">中</option>
@@ -30,91 +58,121 @@
     </select>
   </div>
 
-  <div class="summary">検索結果：{{ filtered().length }}件（{{ page() }}/{{ totalPages() }}）</div>
+  <div class="summary">
+    検索結果：{{ vm.filtered().length }}件（{{ vm.page() }}/{{ vm.totalPages() }}）
+    <span class="summary-sel" *ngIf="vm.selectedCount() > 0">
+      / 選択: {{ vm.selectedCount() }}件</span
+    >
+  </div>
 
   <div class="state" *ngIf="loading()">読み込み中…</div>
   <div class="state error" *ngIf="!loading() && loadError()">{{ loadError() }}</div>
 
   <div class="table-wrap" *ngIf="!loading() && !loadError()">
-    <table class="table" *ngIf="paged().length > 0; else emptyTpl">
+    <table class="table" *ngIf="vm.paged().length > 0; else emptyTpl">
       <thead>
         <tr>
-          <th class="sortable" (click)="sortBy('no')" title="並び替え">
+          <!-- ✅ 選択（ページ内全選択） -->
+          <th class="col-check" title="このページを全選択">
+            <input
+              type="checkbox"
+              [checked]="vm.allSelectedOnPage()"
+              [indeterminate]="vm.someSelectedOnPage()"
+              (change)="vm.toggleSelectAllOnPage()"
+            />
+          </th>
+
+          <th class="sortable" (click)="vm.sortBy('no')" title="並び替え">
             No
-            <span class="sort" [class.is-active]="sortKey() === 'no'">
-              {{ sortKey() === 'no' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'no'">
+              {{ vm.sortKey() === 'no' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('subject')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('subject')" title="並び替え">
             件名
-            <span class="sort" [class.is-active]="sortKey() === 'subject'">
-              {{ sortKey() === 'subject' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'subject'">
+              {{ vm.sortKey() === 'subject' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('customerName')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('customerName')" title="並び替え">
             顧客名
-            <span class="sort" [class.is-active]="sortKey() === 'customerName'">
-              {{ sortKey() === 'customerName' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'customerName'">
+              {{ vm.sortKey() === 'customerName' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('status')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('assignee')" title="並び替え">
+            担当者
+            <span class="sort" [class.is-active]="vm.sortKey() === 'assignee'">
+              {{ vm.sortKey() === 'assignee' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            </span>
+          </th>
+
+          <th class="sortable" (click)="vm.sortBy('status')" title="並び替え">
             ステータス
-            <span class="sort" [class.is-active]="sortKey() === 'status'">
-              {{ sortKey() === 'status' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'status'">
+              {{ vm.sortKey() === 'status' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('priority')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('priority')" title="並び替え">
             優先度
-            <span class="sort" [class.is-active]="sortKey() === 'priority'">
-              {{ sortKey() === 'priority' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'priority'">
+              {{ vm.sortKey() === 'priority' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('createdAt')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('createdAt')" title="並び替え">
             作成日
-            <span class="sort" [class.is-active]="sortKey() === 'createdAt'">
-              {{ sortKey() === 'createdAt' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'createdAt'">
+              {{ vm.sortKey() === 'createdAt' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
 
-          <th class="sortable" (click)="sortBy('updatedAt')" title="並び替え">
+          <th class="sortable" (click)="vm.sortBy('updatedAt')" title="並び替え">
             更新日
-            <span class="sort" [class.is-active]="sortKey() === 'updatedAt'">
-              {{ sortKey() === 'updatedAt' ? (sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
+            <span class="sort" [class.is-active]="vm.sortKey() === 'updatedAt'">
+              {{ vm.sortKey() === 'updatedAt' ? (vm.sortDir() === 'asc' ? '▲' : '▼') : '⇅' }}
             </span>
           </th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let t of paged()">
+        <tr *ngFor="let t of vm.paged()">
+          <!-- ✅ 行選択 -->
+          <td class="col-check">
+            <input
+              type="checkbox"
+              [checked]="vm.isSelected(t.no)"
+              (change)="vm.toggleSelect(t.no)"
+            />
+          </td>
+
           <td class="mono">{{ t.no }}</td>
 
-          <!-- 件名が詳細リンク -->
           <td>
             <a class="subject-link" [routerLink]="['/tickets', t.no]">{{ t.subject }}</a>
           </td>
 
-          <!-- 顧客名：未登録プレースホルダ -->
           <td>
             <span *ngIf="t.customerName; else unassigned">{{ t.customerName }}</span>
-            <ng-template #unassigned>
-              <span class="placeholder">未登録</span>
-            </ng-template>
+            <ng-template #unassigned><span class="placeholder">-</span></ng-template>
           </td>
 
-          <!-- ステータス：色だけ -->
+          <td>
+            <span *ngIf="t.assignee; else noAssignee">{{ t.assignee }}</span>
+            <ng-template #noAssignee><span class="placeholder">-</span></ng-template>
+          </td>
+
           <td>
             <span class="meta meta-status" [attr.data-v]="t.status">{{ t.status }}</span>
           </td>
 
-          <!-- 優先度：色は静か -->
           <td>
-            <span class="meta meta-priority">{{ t.priority }}</span>
+            <span class="meta meta-priority" [attr.data-v]="t.priority">{{ t.priority }}</span>
           </td>
 
           <td class="mono">{{ t.createdAt }}</td>
@@ -128,9 +186,11 @@
     </ng-template>
   </div>
 
-  <!-- ページング -->
   <div class="pager" *ngIf="!loading() && !loadError()">
-    <button class="btn" (click)="prev()" [disabled]="page() === 1">前へ</button>
-    <button class="btn" (click)="next()" [disabled]="page() === totalPages()">次へ</button>
+    <button class="btn pager-btn" (click)="vm.prev()" [disabled]="vm.page() === 1">前へ</button>
+
+    <button class="btn pager-btn" (click)="vm.next()" [disabled]="vm.page() === vm.totalPages()">
+      次へ
+    </button>
   </div>
 </div>

@@ -1,0 +1,182 @@
+.page {
+  max-width: 920px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.back {
+  text-decoration: none;
+  color: #334155;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.06);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chip {
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #334155;
+}
+
+/* ステータス別の表示（背景/枠色のみ変更） */
+.chip[data-status='受付'] {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+.chip[data-status='対応中'] {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+}
+.chip[data-status='完了'] {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.dirty {
+  font-size: 12px;
+  color: #4f46e5;
+  margin-left: 4px;
+}
+
+/* 件名（主情報）：視認性優先。長文/改行でも詰まらない行間にする */
+.subject {
+  margin: 8px 0 6px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* 顧客名（補助情報）：件名より小さく・落ち着いたトーンにする */
+.customer {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #475569;
+}
+
+/* 顧客名の値のみ軽く強調（過度な強調は避ける） */
+.customer span {
+  font-weight: 500;
+}
+
+.body {
+  white-space: pre-wrap;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 14px;
+  min-height: 120px;
+}
+
+/* 入力欄（担当者/ステータス）を2カラムで配置。右側はselect幅を固定 */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+label {
+  font-size: 12px;
+  color: #475569;
+}
+
+.control {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+}
+
+.control:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* 左寄せする要素（キャンセル）だけ先頭に寄せる */
+.actions-left {
+  margin-right: auto;
+}
+
+.btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 既存クラス互換（見た目はbtnと同一） */
+.btn--ghost {
+  background: #fff;
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 10px;
+}
+
+.muted {
+  color: #64748b;
+}
+
+@media (max-width: 760px) {
+  /* モバイルは縦積みに切り替え */
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  /* モバイルはボタンが折り返せるようにする */
+  .actions {
+    flex-wrap: wrap;
+  }
+}
